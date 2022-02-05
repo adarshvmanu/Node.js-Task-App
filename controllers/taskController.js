@@ -5,12 +5,16 @@ const task = mongoose.model('Task')
 
 router.get('/',(req,res)=>{
     res.render('task/addEdit',{
-        viewTitle : "Update Your To-Do List"
+        viewTitle : "Add New Task"
     })
 })
 router.post('/',(req,res)=>{
-    addTask(req,res)
+    if(req.body._id=='')
+     addTask(req,res);
+    else
+     editTask(req,res);
 })
+
 //function to add task
 function addTask(req,res){
     var Task = new task();
@@ -25,7 +29,38 @@ function addTask(req,res){
         }
     })
 }
+//function to edit task
 
+function editTask(req, res) {
+    task.findOneAndUpdate({ _id: req.body._id }, req.body, { new: true }, (err, doc) => {
+        if (!err) { res.redirect('task/list'); }
+        else {
+            if (err.name == 'ValidationError') {
+                handleValidationError(err, req.body);
+                res.render("task/addEdit", {
+                    viewTitle: 'Update Task',
+                    task: req.body
+                });
+            }
+            else
+                console.log('Error during Task Update : ' + err);
+        }
+    });
+}
+
+router.get('/edit/:id',(req,res)=>{
+    task.findById(req.params.id,(err,docs)=>{
+        if(!err){
+            res.render('task/addEdit',{
+                viewTitle : "Update Task",
+                task : docs
+            })
+        }
+        else{
+            console.log("Error in Editing "+err)
+        }
+    })
+})
 
 //Display
 router.get('/list',(req,res)=>{
@@ -37,6 +72,7 @@ router.get('/list',(req,res)=>{
         }
     })
 })
+
 //Delete
 router.get('/delete/:id',(req,res)=>{
     task.findByIdAndRemove(req.params.id,(err,docs)=>{
@@ -48,5 +84,4 @@ router.get('/delete/:id',(req,res)=>{
         }
     })
 })
-
 module.exports = router ;
