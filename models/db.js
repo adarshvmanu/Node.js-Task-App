@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost:27017/taskDB' , {useNewUrlParser : true} , (err) =>{
+mongoose.connect('mongodb+srv://userx:userx@taskapp.hdfos.mongodb.net/taskapp' , {useNewUrlParser : true} , (err) =>{
     if(!err)
     {
         console.log('MongoDB Successfully Connected')
